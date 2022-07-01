@@ -1,5 +1,5 @@
 # Compose file chooser
-It's simple file chooser in materil disign that was disigned only for my personal needs.
+It's simple file chooser in material disign that was disigned only for my personal needs.
 
 It supports:
 1. file selection
@@ -8,3 +8,4 @@ It supports:
 4. table and grid representation
 5. actions like "new folder", "delete", "copy/paste"
 6. filters
+7. unfortunately **not** selection by drag
