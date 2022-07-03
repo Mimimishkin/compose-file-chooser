@@ -49,10 +49,10 @@ internal fun Overview(
                     )
                 }
                 second(140.dp) {
-                    FilesSite(
+                    FilesPlace(
                         filesState = filesState,
                         representationState = representationState,
-                        allowSelect = { settings.fullFilter(it.asCommon) },
+                        allowSelect = settings.fullFilter.asHierarchy,
                         onChosen = onChosen,
                         onOpen = onVisitDir,
                         onSort = { filesState.comparator = it }
@@ -61,7 +61,7 @@ internal fun Overview(
             }
         }
     } else {
-        FilesSite(
+        FilesPlace(
             filesState = filesState,
             representationState = representationState,
             allowSelect = { settings.fullFilter(it.asCommon) },

@@ -9,7 +9,7 @@ internal class ChooserActionsController(
     private val state: FilesState,
     private val operations: StandardFileOperations
 ) {
-    private val someSelected by derivedStateOf { state.selected.isNotEmpty() }
+    private val someSelected by derivedStateOf { state.selected.firstOrNull()?.parent == state.dir }
     private val mayChange by derivedStateOf { !state.dir.isSystem }
 
     val mayNewFolder by derivedStateOf { mayChange }

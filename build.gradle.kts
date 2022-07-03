@@ -30,10 +30,11 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
 
-                implementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.1.1")
+                implementation(compose.materialIconsExtended)
 
-                implementation("org.jetbrains.compose.components:components-splitpane-desktop:1.1.1")
-                runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.2")
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.desktop.components.splitPane)
+                runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.+")
             }
         }
         val jvmTest by getting

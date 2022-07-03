@@ -16,11 +16,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun FileNameBar(
-    selectedFile: HierarchyFile?,
+    filesState: FilesState,
     extensions: Map<String, String>,
     modifier: Modifier = Modifier,
     onChosen: (name: String) -> Unit = {}
-) {
+) = with(filesState) {
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         val color = MaterialTheme.colors.primary.copy(0.4f)
         var name by remember { mutableStateOf("") }
@@ -28,11 +28,11 @@ internal fun FileNameBar(
         SimpleOutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            onRestoreValue = { name = selectedFile?.name ?: "" },
+            onRestoreValue = { name = lastSelected?.name ?: "" },
             onAction = { onChosen(name); true; },
             color = color,
             hint = { Text(Vocabulary.file_name, maxLines = 1) },
-            placeholder = { Text(selectedFile?.name ?: "", fontWeight = FontWeight.Bold, maxLines = 1) },
+            placeholder = { Text(lastSelected?.name ?: "", fontWeight = FontWeight.Bold, maxLines = 1) },
             modifier = Modifier.weight(1f)
         )
 
@@ -58,9 +58,14 @@ internal fun FileNameBar(
                         Text(
                             text = "${it.value} (.${it.key})",
                             Modifier
+                                .fillMaxWidth()
                                 .padding(4.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .clickable { extension = it; expanded = false }
+                                .clickable {
+                                    extension = it
+                                    expanded = false
+                                    filter = extensionFilter(setOf(it.key)).asHierarchy
+                                }
                                 .padding(4.dp)
                         )
                     }

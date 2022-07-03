@@ -23,6 +23,7 @@ import kotlin.math.min
 
 internal class FileTreeTravelHistory(
     initialDirectory: HierarchyFile,
+    private val mayVisit: (HierarchyFile) -> Boolean = { true },
     private val onVisit: (HierarchyFile) -> Unit = {}
 ) {
     private val _list = mutableListOf(initialDirectory)
@@ -36,12 +37,14 @@ internal class FileTreeTravelHistory(
     }
 
     fun visit(directory: HierarchyFile) {
-        if (list[currentIndex] == directory)
-            return
-        _list.dropLast(list.lastIndex - currentIndex)
-        _list.add(directory)
-        currentIndex++
-        onVisit(directory)
+        if (mayVisit(directory)) {
+            if (list[currentIndex] == directory)
+                return
+            _list.dropLast(list.lastIndex - currentIndex)
+            _list.add(directory)
+            currentIndex++
+            onVisit(directory)
+        }
     }
 
     fun undo() {
@@ -63,10 +66,12 @@ internal class FileTreeTravelHistory(
 @Composable
 internal fun rememberHistory(
     initial: HierarchyFile,
+    mayVisit: (HierarchyFile) -> Boolean,
     onVisit: (HierarchyFile) -> Unit
 ) = remember {
     FileTreeTravelHistory(
         initialDirectory = initial,
+        mayVisit = mayVisit,
         onVisit = onVisit
     )
 }

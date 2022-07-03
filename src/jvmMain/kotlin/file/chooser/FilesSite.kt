@@ -18,80 +18,13 @@ import androidx.compose.ui.input.pointer.PointerEventType.Companion.Scroll
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
 import file.chooser.HierarchyFile.Companion.FileComparator
-import file.chooser.HierarchyFile.Companion.asHierarchy
 import file.chooser.ListRepresentationState.Companion.maxScale
 import file.chooser.ListRepresentationState.Companion.minScale
 import file.chooser.ListRepresentationState.Companion.normalCellSize
-import java.io.File
-import kotlin.math.max
-import kotlin.math.min
-
-internal class FilesState(initialDir: HierarchyFile) {
-    var dir by mutableStateOf(initialDir)
-
-    var comparator by mutableStateOf<Comparator<HierarchyFile>?>(null)
-
-    val files by derivedStateOf { if (comparator == null) dir.children else dir.children.sortedWith(comparator!!) }
-
-    var selected by mutableStateOf(setOf<HierarchyFile>())
-        private set
-
-    var lastSelected by mutableStateOf<HierarchyFile?>(null)
-        private set
-
-    fun select(multi: Boolean, reverse: Boolean, file: HierarchyFile) {
-        if (lastSelected == null || lastSelected!!.parent != dir) {
-            selected = setOf(file)
-        } else {
-            when {
-                !multi && !reverse -> {
-                    selected = setOf(file)
-                }
-                !multi && reverse -> {
-                    selected = if (file in selected) selected - file else selected + file
-                }
-                multi && !reverse -> {
-                    val range = with(files) { range(indexOf(lastSelected), indexOf(file)) }
-                    selected = selected + range
-                }
-                else /*multi && reverse*/ -> {
-                    val range = with(files) { range(indexOf(lastSelected), indexOf(file)) }
-                    val (old, new) = range.partition { it in selected }
-                    selected = selected - old + new
-                }
-            }
-        }
-        lastSelected = file
-    }
-
-    fun unselect() {
-        selected = setOf()
-        lastSelected = null
-    }
-
-    fun selectAll() {
-        selected = dir.children.toSet()
-        lastSelected = selected.lastOrNull()
-    }
-
-    fun invertSelection() {
-        selected = (dir.children - selected).toSet()
-        lastSelected = selected.lastOrNull()
-    }
-
-    fun refresh() {
-        val oldDir = dir
-        dir = File.listRoots()[0].asHierarchy
-        dir = oldDir
-    }
-}
-
-private fun <E> List<E>.range(first: Int, second: Int): List<E> =
-    slice(min(first, second)..max(first, second))
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-internal fun FilesSite(
+internal fun FilesPlace(
     filesState: FilesState,
     modifier: Modifier = Modifier,
     representationState: ListRepresentationState,
@@ -129,7 +62,7 @@ internal fun FilesSite(
             val border by animateDpAsState(if (isSelected) 2.5.dp else 0.dp)
 
             val clickable = Modifier.combinedClickable(
-                enabled = allowSelect(file),
+                enabled = file.isDirectory || allowSelect(file),
                 onDoubleClick = { onChooseOrOpen(file) },
                 onClick = { select(multiselectMode, reverseMode, file) }
             )
@@ -155,7 +88,7 @@ internal fun FilesSite(
                 onCtrl = { reverseMode = it; true },
                 onShift = { multiselectMode = it; true },
                 onEnter = {
-                    if (selected.isEmpty()) return@keyboardNavigation false
+                    if (selected.isEmpty() || !selected.all(allowSelect)) return@keyboardNavigation false
 
                     if (reverseMode /*ctrl*/ || selected.size != 1) {
                         onChosen(selected)

@@ -1,10 +1,15 @@
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 import java.util.*
 
-interface Strings {
+interface Localization {
+    companion object {
+        val default = object : Localization {}
+    }
+
     val open get() = "Open"
     val cancel get() = "Cancel"
     val confirm get() = "Confirm"
@@ -33,11 +38,14 @@ interface Strings {
     val rename_files get() = "Rename files"
     val new_name get() = "New name"
     val deleting_failed get() = "Failed to delete some files:"
+    val choose_files get() = "Choose files"
+    val choose_files_and_dirs get() = "Choose files or dirs"
+    val choose_dirs get() = "Choose dirs:"
 }
 
-private val Default: Pair<Locale, Strings> = Locale("en") to object : Strings {}
+private val English: Pair<String, Localization> = "en" to object : Localization {}
 
-private val Russian: Pair<Locale, Strings> = Locale("ru") to object : Strings {
+private val Russian: Pair<String, Localization> = "ru" to object : Localization {
     override val open = "Открыть"
     override val cancel = "Отмена"
     override val confirm = "Подтвердить"
@@ -66,13 +74,16 @@ private val Russian: Pair<Locale, Strings> = Locale("ru") to object : Strings {
     override val rename_files = "Переименовать файлы"
     override val new_name = "Новое имя"
     override val deleting_failed = "Не удалось удалить следущие файлы:"
+    override val choose_files = "Выберите файлы"
+    override val choose_files_and_dirs = "Выберите файлы или папки"
+    override val choose_dirs = "Выберите папки:"
 }
 
-private val languageMap = mapOf(Default, Russian)
+private val localizations = mapOf(English, Russian)
 
-private val systemLocale = Locale(Locale.getDefault().language)
+private val systemLanguage = Locale.getDefault().language
 
-val LocalLocalization = compositionLocalOf { languageMap[systemLocale] ?: Default.second }
+val LocalLocalization = compositionLocalOf { localizations[systemLanguage] ?: Localization.default }
 
 val Vocabulary
     @Composable
@@ -80,9 +91,9 @@ val Vocabulary
     get() = LocalLocalization.current
 
 @Composable
-fun Localized(locale: Locale, content: @Composable () -> Unit) {
+fun Localized(language: String, content: @Composable () -> Unit) {
     CompositionLocalProvider(
-        LocalLocalization provides (languageMap[locale] ?: Default.second)
+        LocalLocalization provides (localizations[language] ?: Localization.default)
     ) {
         content()
     }

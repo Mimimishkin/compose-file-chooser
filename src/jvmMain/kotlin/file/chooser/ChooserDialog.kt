@@ -1,5 +1,6 @@
 package file.chooser
 
+import Localized
 import Vocabulary
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.singleWindowApplication
+import file.chooser.ChooserMode.OnlyDirs
 import file.chooser.HierarchyFile.Companion.asHierarchy
 import java.io.File
 
@@ -42,11 +44,16 @@ fun ChooserDialogContainer(content: @Composable () -> Unit) {
 fun ChooserDialog(
     initialDirectory: File = LocalChooserDialogLastDirectory.current.dir,
     settings: ChooserSettings = defaultChooserSettings(),
+    title: String = when (settings.mode) {
+        ChooserMode.OnlyFiles -> Vocabulary.choose_files
+        ChooserMode.FilesAndDirs -> Vocabulary.choose_files_and_dirs
+        OnlyDirs -> Vocabulary.choose_dirs
+    },
     onChosen: (Set<File>) -> Unit = {}
 ) {
     val state = LocalChooserDialogLastDirectory.current
 
-    Dialog(onCloseRequest = { onChosen(setOf()) }) {
+    Dialog(title = title, onCloseRequest = { onChosen(setOf()) }) {
         ChooserDialogContent(
             initialDirectory = initialDirectory.asHierarchy,
             settings = settings,
@@ -64,16 +71,21 @@ internal fun ChooserDialogContent(
     onChosen: (Set<HierarchyFile>) -> Unit = {},
     onCurrentDirChanged: (HierarchyFile) -> Unit = {}
 ) {
+    val mayChoose: (Set<HierarchyFile>) -> Boolean = { it.all(predicate = settings.fullFilter.asHierarchy) }
     val hierarchy = remember { ExplorerHierarchy(HierarchyFile.explorerShortcuts) }
-    val filesState = remember { FilesState(initialDirectory) }
-    val history = rememberHistory(initialDirectory) {
-        if (it.isDirectory) {
-            filesState.dir = it
-            onCurrentDirChanged(it)
-        } else {
-            onChosen(setOf(it))
+    val filesState = rememberFilesState(initialDirectory, settings.firstExtension)
+    val history = rememberHistory(
+        initial = initialDirectory,
+        mayVisit = { it.isDirectory || (settings.mode != OnlyDirs && mayChoose(setOf(it))) },
+        onVisit = {
+            if (it.isDirectory) {
+                filesState.dir = it
+                onCurrentDirChanged(it)
+            } else {
+                onChosen(setOf(it))
+            }
         }
-    }
+    )
     val representationState = remember { ListRepresentationState() }
     var isHierarchyVisible by remember { mutableStateOf(true) }
 
@@ -111,7 +123,7 @@ internal fun ChooserDialogContent(
                 modifier = Modifier.background(background).padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 FileNameBar(
-                    selectedFile = lastSelected,
+                    filesState = filesState,
                     extensions = settings.allowedExtensions,
                     modifier = Modifier.height(40.dp),
                     onChosen = { name -> history.current.children.find { it.name == name }?.let { history.visit(it) } }
@@ -120,13 +132,14 @@ internal fun ChooserDialogContent(
                 Row {
                     Spacer(Modifier.weight(1f))
 
+                    val actionOpen = lastSelected?.isDirectory == true
                     Button(
                         onClick = { lastSelected!!.let { if (it.isDirectory) history.visit(it) else onChosen(selected) } },
                         modifier = Modifier.height(40.dp),
                         shape = RoundedCornerShape(8.dp),
-                        enabled = selected.isNotEmpty()
+                        enabled = selected.isNotEmpty() && (actionOpen || mayChoose(selected))
                     ) {
-                        Text(if (lastSelected?.isDirectory == true) Vocabulary.open else Vocabulary.confirm)
+                        Text(if (actionOpen) Vocabulary.open else Vocabulary.confirm)
                     }
 
                     Spacer(Modifier.width(8.dp))
@@ -146,11 +159,15 @@ internal fun ChooserDialogContent(
 
 private fun main() = singleWindowApplication {
     MaterialTheme {
+        Localized("en") {
             var isVisible by remember { mutableStateOf(true) }
             val chosen = remember { mutableListOf<File>().toMutableStateList() }
 
             if (isVisible) {
-                ChooserDialog { chosen += it; isVisible = false }
+                ChooserDialog(
+                    settings = defaultChooserSettings(mode = ChooserMode.OnlyFiles, extensions = mapOf("exe" to "FPOEKF", "txt" to "FPOEKF")),
+                    onChosen = { chosen += it; isVisible = false }
+                )
             }
 
             Column {
@@ -158,5 +175,6 @@ private fun main() = singleWindowApplication {
                     Text(it.path)
                 }
             }
+        }
     }
 }
