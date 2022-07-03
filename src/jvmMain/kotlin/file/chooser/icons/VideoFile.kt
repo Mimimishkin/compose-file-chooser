@@ -1,4 +1,4 @@
-package file.chooser.icons.filled
+package file.chooser.icons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon

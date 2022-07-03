@@ -1,18 +1,17 @@
 package file.chooser
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -55,12 +54,9 @@ internal class FileTreeTravelHistory(
         onVisit(list[currentIndex])
     }
 
-    fun moveTo(directory: HierarchyFile) {
-        val index = list.indexOf(directory)
-        if (index != -1) {
-            currentIndex = index
-            onVisit(list[currentIndex])
-        }
+    fun moveTo(index: Int) {
+        currentIndex = index
+        onVisit(list[currentIndex])
     }
 }
 
@@ -97,7 +93,8 @@ internal fun FileTreeTravelHistoryItem(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
             )
         }
     }
@@ -108,22 +105,18 @@ internal fun FileTreeTravelHistoryItem(
             enabled = currentIndex > 0,
             onClick = { undo() }
         )
+
         SimpleButton(
             icon = Icons.Default.ArrowForward,
             enabled = currentIndex < list.lastIndex,
             onClick = { redo() }
-        )
-        SimpleButton(
-            icon = Icons.Default.ArrowUpward,
-            enabled = list[currentIndex].hasParent,
-            onClick = { visit(list[currentIndex].parent) }
         )
 
         Box {
             var expanded by remember { mutableStateOf(false) }
 
             SimpleButton(
-                icon = Icons.Default.ArrowCircleDown,
+                icon = Icons.Default.KeyboardArrowDown,
                 enabled = list.size > 1,
                 onClick = { expanded = true }
             )
@@ -133,8 +126,15 @@ internal fun FileTreeTravelHistoryItem(
                 onDismissRequest = { expanded = false }
             ) {
                 list.reversed().forEachIndexed { index, file ->
-                    DropdownMenuItem(
-                        onClick = { expanded = false; moveTo(file) }
+                    Row(
+                        verticalAlignment = CenterVertically,
+                        modifier = Modifier
+                            .widthIn(max = 370.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 2.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .clickable { expanded = false; moveTo(list.lastIndex - index) }
+                            .padding(4.dp)
                     ) {
                         Icon(
                             imageVector = when {
@@ -143,18 +143,24 @@ internal fun FileTreeTravelHistoryItem(
                                 else -> Icons.Default.Circle
                             },
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(12.dp)
                         )
 
-                        Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(4.dp))
 
                         Text(
-                            text = file.path,
+                            text = with(file) { if (!isSystem) path else name },
                             fontSize = 12.sp
                         )
                     }
                 }
             }
         }
+
+        SimpleButton(
+            icon = Icons.Default.ArrowUpward,
+            enabled = list[currentIndex].hasParent,
+            onClick = { visit(list[currentIndex].parent) }
+        )
     }
 }

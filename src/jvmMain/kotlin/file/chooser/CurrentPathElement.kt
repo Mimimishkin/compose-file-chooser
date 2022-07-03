@@ -7,28 +7,33 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import file.chooser.HierarchyFile.Companion.asHierarchy
+import Vocabulary
+import java.io.File
 
 @Composable
 internal fun CurrentPathElement(
     file: HierarchyFile,
-    modifier: Modifier = Modifier,
     onSubPath: (HierarchyFile) -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
     @Composable
-    fun PathPart(file: HierarchyFile) {
+    fun PathPart(dir: HierarchyFile) {
         Text(
-            file.name,
+            dir.name,
             Modifier
                 .clip(RoundedCornerShape(4.dp))
-                .clickable { onSubPath(file) }
+                .clickable { onSubPath(dir) }
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         )
     }
@@ -49,4 +54,29 @@ internal fun CurrentPathElement(
             PathPart(file)
         }
     }
+}
+
+@Composable
+internal fun EditableCurrentPathElement(
+    dir: HierarchyFile,
+    color: Color = LocalContentColor.current,
+    modifier: Modifier = Modifier,
+    onPath: (HierarchyFile) -> Unit = {},
+) {
+    var path by remember { mutableStateOf("") }
+
+    SimpleOutlinedTextField(
+        modifier = modifier,
+        value = path,
+        onValueChange = { path = it },
+        onRestoreValue = { path = dir.path },
+        onAction = {
+            val file = File(path)
+            if (file.exists()) onPath(file.asHierarchy)
+            true
+        },
+        color = color,
+        hint = { Text(Vocabulary.folder_path) },
+        placeholder = { CurrentPathElement(dir, onPath) }
+    )
 }

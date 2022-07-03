@@ -1,14 +1,16 @@
 package file.chooser
 
+import java.awt.Desktop
+import java.awt.Desktop.Action.MOVE_TO_TRASH
 import java.awt.image.BufferedImage
-import java.awt.image.BufferedImage.SCALE_FAST
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.io.File
 import javax.swing.filechooser.FileSystemView
-import java.awt.Image as AwtImage
 import javax.swing.Icon as SwingIcon
 
 private val view = FileSystemView.getFileSystemView()
+private val desktop = Desktop.getDesktop()
+private val trashSupported = desktop.isSupported(MOVE_TO_TRASH)
 
 object FileUtils {
     val shortcuts: List<File>
@@ -23,6 +25,8 @@ object FileUtils {
     val defaultDirectory: File get() = view.defaultDirectory
 }
 
+val File.isSystem: Boolean get() = path == name//view.isFileSystem(this)
+
 val File.isDrive: Boolean get() = view.isDrive(this)
 
 val File.isLink: Boolean get() = view.isLink(this)
@@ -36,6 +40,8 @@ val File.typeDescription: String get() = view.getSystemTypeDescription(this)
 fun File.icon(size: Int) = view.getSystemIcon(this, size, size)
 
 val File.smallIcon get() = view.getSystemIcon(this)
+
+fun File.remove() = if (trashSupported) desktop.moveToTrash(this) else deleteRecursively()
 
 fun SwingIcon.toBuffered(): BufferedImage {
     return BufferedImage(

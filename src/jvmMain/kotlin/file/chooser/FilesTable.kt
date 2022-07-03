@@ -1,6 +1,7 @@
 package file.chooser
 
 import Table
+import Vocabulary
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.gestures.scrollBy
@@ -45,7 +46,7 @@ internal fun FilesTable(
             columns = FilesTableColumn.values(),
             row = { file, content ->
                 FileInfoArea(
-                    info = file.info.toString(),
+                    info = file.info.infoToString(),
                     modifier = elementModifier(file),
                     content = content
                 )
@@ -53,10 +54,10 @@ internal fun FilesTable(
             head = { column ->
                 Text(
                     text = when (column) {
-                        Name -> "Имя"
-                        Type -> "Тип"
-                        Size -> "Размер"
-                        Date -> "Дата изменения"
+                        Name -> Vocabulary.name
+                        Type -> Vocabulary.type
+                        Size -> Vocabulary.size
+                        Date -> Vocabulary.edit_time
                     },
                     maxLines = 1,
                     fontSize = 14.sp

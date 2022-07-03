@@ -3,13 +3,9 @@ package file.chooser
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -21,39 +17,31 @@ import androidx.compose.ui.input.pointer.PointerEventType.Companion.Press
 import androidx.compose.ui.input.pointer.PointerEventType.Companion.Scroll
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
+import file.chooser.HierarchyFile.Companion.FileComparator
+import file.chooser.HierarchyFile.Companion.asHierarchy
+import file.chooser.ListRepresentationState.Companion.maxScale
+import file.chooser.ListRepresentationState.Companion.minScale
+import file.chooser.ListRepresentationState.Companion.normalCellSize
+import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
-@Composable
-internal fun FilesSite(
-    files: List<HierarchyFile>,
-    modifier: Modifier = Modifier,
-    asGrid: Boolean = true,
-    allowSelect: (HierarchyFile) -> Boolean,
-    onChosen: (Set<HierarchyFile>) -> Unit,
-    onOpen: (dir: HierarchyFile) -> Unit,
-    onSort: (FilesTableColumn, reverse: Boolean) -> Unit,
-) {
-    val normalCellSize = 80.dp
-    var scale by remember { mutableStateOf(1f) }
+internal class FilesState(initialDir: HierarchyFile) {
+    var dir by mutableStateOf(initialDir)
 
-    val onChooseOrOpen = { file: HierarchyFile ->
-        if (file.isDirectory) {
-            onOpen(if (file.isLink) file.linkLocation else file)
-        } else {
-            onChosen(setOf(file))
-        }
-    }
+    var comparator by mutableStateOf<Comparator<HierarchyFile>?>(null)
 
-    var selected by remember { mutableStateOf(setOf<HierarchyFile>()) }
-    var lastSelected by remember(files) { mutableStateOf<HierarchyFile?>(null) }
-    var multiselectMode by remember { mutableStateOf(false) }
-    var reverseMode by remember { mutableStateOf(false) }
-    val onSelected = fun(multi: Boolean, reverse: Boolean, file: HierarchyFile) {
-        if (lastSelected == null) {
+    val files by derivedStateOf { if (comparator == null) dir.children else dir.children.sortedWith(comparator!!) }
+
+    var selected by mutableStateOf(setOf<HierarchyFile>())
+        private set
+
+    var lastSelected by mutableStateOf<HierarchyFile?>(null)
+        private set
+
+    fun select(multi: Boolean, reverse: Boolean, file: HierarchyFile) {
+        if (lastSelected == null || lastSelected!!.parent != dir) {
             selected = setOf(file)
-            lastSelected = file
         } else {
             when {
                 !multi && !reverse -> {
@@ -63,19 +51,65 @@ internal fun FilesSite(
                     selected = if (file in selected) selected - file else selected + file
                 }
                 multi && !reverse -> {
-                    val range = files.sublist(files.indexOf(lastSelected), files.indexOf(file))
+                    val range = with(files) { range(indexOf(lastSelected), indexOf(file)) }
                     selected = selected + range
                 }
                 else /*multi && reverse*/ -> {
-                    val range = files.sublist(files.indexOf(lastSelected), files.indexOf(file))
-                    val new = range - selected
-                    val old = range - new
+                    val range = with(files) { range(indexOf(lastSelected), indexOf(file)) }
+                    val (old, new) = range.partition { it in selected }
                     selected = selected - old + new
                 }
             }
-            lastSelected = file
+        }
+        lastSelected = file
+    }
+
+    fun unselect() {
+        selected = setOf()
+        lastSelected = null
+    }
+
+    fun selectAll() {
+        selected = dir.children.toSet()
+        lastSelected = selected.lastOrNull()
+    }
+
+    fun invertSelection() {
+        selected = (dir.children - selected).toSet()
+        lastSelected = selected.lastOrNull()
+    }
+
+    fun refresh() {
+        val oldDir = dir
+        dir = File.listRoots()[0].asHierarchy
+        dir = oldDir
+    }
+}
+
+private fun <E> List<E>.range(first: Int, second: Int): List<E> =
+    slice(min(first, second)..max(first, second))
+
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
+@Composable
+internal fun FilesSite(
+    filesState: FilesState,
+    modifier: Modifier = Modifier,
+    representationState: ListRepresentationState,
+    allowSelect: (HierarchyFile) -> Boolean,
+    onChosen: (Set<HierarchyFile>) -> Unit,
+    onOpen: (dir: HierarchyFile) -> Unit,
+    onSort: (Comparator<HierarchyFile>) -> Unit,
+) = with(filesState) { with(representationState) {
+    val onChooseOrOpen = { file: HierarchyFile ->
+        if (file.isDirectory) {
+            onOpen(if (file.isLink) file.linkLocation else file)
+        } else {
+            onChosen(setOf(file))
         }
     }
+
+    var multiselectMode by remember { mutableStateOf(false) }
+    var reverseMode by remember { mutableStateOf(false) }
     val selectionModifier = { file: HierarchyFile ->
         Modifier.composed {
             val isSelected = file in selected
@@ -97,7 +131,7 @@ internal fun FilesSite(
             val clickable = Modifier.combinedClickable(
                 enabled = allowSelect(file),
                 onDoubleClick = { onChooseOrOpen(file) },
-                onClick = { onSelected(multiselectMode, reverseMode, file) }
+                onClick = { select(multiselectMode, reverseMode, file) }
             )
             val selection = if (asGrid) {
                 Modifier.border(border, color, FileCellShape)
@@ -135,8 +169,7 @@ internal fun FilesSite(
                     if (lastSelected != null) {
                         it.action(files.indexOf(lastSelected)) { old, new ->
                             if (new in files.indices) {
-                                onSelected(false, true, files[old])
-                                onSelected(multiselectMode, reverseMode, files[new])
+                                select(multiselectMode, reverseMode, files[new])
                                 true
                             } else {
                                 false
@@ -149,7 +182,7 @@ internal fun FilesSite(
             )
             .onPointerEvent(Scroll) {
                 if (asGrid && reverseMode) {
-                    scale = (scale - it.changes.first().scrollDelta.y / 10).coerceIn(0.5f, 1.5f)
+                    scale = (scale - it.changes.first().scrollDelta.y / 10).coerceIn(minScale, maxScale)
                 }
             }
     ) {
@@ -162,14 +195,9 @@ internal fun FilesSite(
         } else {
             FilesTable(
                 files = files,
-                onSort = onSort,
+                onSort = { column, reverse -> onSort(FileComparator(column, reverse)) },
                 elementModifier = selectionModifier
             )
         }
     }
-}
-
-private fun List<HierarchyFile>.sublist(
-    first: Int,
-    second: Int
-) = subList(min(first, second), max(first, second) + 1)
+} }

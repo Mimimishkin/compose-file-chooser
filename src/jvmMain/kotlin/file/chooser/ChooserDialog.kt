@@ -1,44 +1,21 @@
 package file.chooser
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
+import Vocabulary
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.spacedBy
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.LocalTextStyle
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment.Companion.CenterStart
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.*
-import androidx.compose.ui.input.key.Key.Companion.Enter
-import androidx.compose.ui.input.key.KeyEventType.Companion.KeyUp
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction.Companion.Search
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.singleWindowApplication
 import file.chooser.HierarchyFile.Companion.asHierarchy
 import java.io.File
-import java.lang.System.currentTimeMillis as currentTime
 
 val LocalChooserDialogLastDirectory = compositionLocalOf { ChooserDialogState() }
 
@@ -64,7 +41,7 @@ fun ChooserDialogContainer(content: @Composable () -> Unit) {
 @Composable
 fun ChooserDialog(
     initialDirectory: File = LocalChooserDialogLastDirectory.current.dir,
-    settings: ChooserSettings = ChooserSettings(),
+    settings: ChooserSettings = defaultChooserSettings(),
     onChosen: (Set<File>) -> Unit = {}
 ) {
     val state = LocalChooserDialogLastDirectory.current
@@ -83,131 +60,103 @@ fun ChooserDialog(
 internal fun ChooserDialogContent(
     initialDirectory: HierarchyFile,
     modifier: Modifier = Modifier,
-    settings: ChooserSettings = ChooserSettings(),
+    settings: ChooserSettings = defaultChooserSettings(),
     onChosen: (Set<HierarchyFile>) -> Unit = {},
     onCurrentDirChanged: (HierarchyFile) -> Unit = {}
 ) {
     val hierarchy = remember { ExplorerHierarchy(HierarchyFile.explorerShortcuts) }
-    val history = rememberHistory(initialDirectory) { onCurrentDirChanged(it) }
-
-    Column(modifier) {
-        TopBar(Modifier.height(40.dp), history = history)
-
-        Overview(
-            explorerHierarchy = hierarchy,
-            currentDir = history.current,
-            onVisitDir = { history.visit(it) },
-            settings = settings,
-            onChosen = onChosen
-        )
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-internal fun TopBar(
-    modifier: Modifier = Modifier,
-    history: FileTreeTravelHistory
-) {
-    Row(modifier, horizontalArrangement = spacedBy(4.dp)) {
-        val color = MaterialTheme.colors.primary.copy(0.4f)
-        val shape = CircleShape
-
-        Box(
-            contentAlignment = CenterStart,
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(2.dp)
-                .background(color, shape)
-                .padding(horizontal = 8.dp)
-                .padding(2.dp)
-        ) {
-            FileTreeTravelHistoryItem(
-                history = history,
-            )
+    val filesState = remember { FilesState(initialDirectory) }
+    val history = rememberHistory(initialDirectory) {
+        if (it.isDirectory) {
+            filesState.dir = it
+            onCurrentDirChanged(it)
+        } else {
+            onChosen(setOf(it))
         }
+    }
+    val representationState = remember { ListRepresentationState() }
+    var isHierarchyVisible by remember { mutableStateOf(true) }
 
-        var isEditing by remember { mutableStateOf(false) }
-        var editingPath by remember { mutableStateOf("") }
+    with(filesState) {
+        Column(modifier) {
+            val background = MaterialTheme.colors.primaryVariant.copy(0.1f)
 
-        val focusRequester = remember { FocusRequester() }
-        val focusManager = LocalFocusManager.current
+            Column(
+                verticalArrangement = spacedBy(4.dp),
+                modifier = Modifier.background(background).padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                ActionsBar(
+                    isHierarchyVisible = isHierarchyVisible,
+                    onSwitchHierarchyVisibility = { isHierarchyVisible = !isHierarchyVisible },
+                    listRepresentationState = representationState,
+                    filesState = filesState,
+                    modifier = Modifier.height(40.dp)
+                )
 
-        val border by animateDpAsState(if (isEditing) 2.5.dp else 0.dp)
-        val borderModifier = Modifier.border(width = border, color = color, shape = shape)
-        val backgroundModifier = Modifier.background(color, shape)
-        val clickable = Modifier.clip(shape).clickable { focusRequester.requestFocus() }
+                FileTreeNavigationBar(history = history, Modifier.height(40.dp))
+            }
 
-        Box(
-            contentAlignment = CenterStart,
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(2.dp)
-                .then(if (isEditing) Modifier else clickable)
-                .then(if (isEditing) borderModifier else backgroundModifier)
-                .padding(horizontal = 8.dp)
-                .padding(2.dp)
-        ) {
-            BasicTextField(
-                value = editingPath,
-//                enabled = isEditing,
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-                    .onFocusEvent {
-                        if (isEditing != it.hasFocus) {
-                            isEditing = it.hasFocus
-                            editingPath = if (it.hasFocus) history.current.path else ""
-                        }
+            Overview(
+                explorerHierarchy = if (isHierarchyVisible) hierarchy else null,
+                modifier = Modifier.weight(1f).padding(vertical = 4.dp),
+                filesState = filesState,
+                onVisitDir = { history.visit(it) },
+                settings = settings,
+                onChosen = onChosen,
+                representationState = representationState
+            )
+
+            Column(
+                verticalArrangement = spacedBy(4.dp),
+                modifier = Modifier.background(background).padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                FileNameBar(
+                    selectedFile = lastSelected,
+                    extensions = settings.allowedExtensions,
+                    modifier = Modifier.height(40.dp),
+                    onChosen = { name -> history.current.children.find { it.name == name }?.let { history.visit(it) } }
+                )
+
+                Row {
+                    Spacer(Modifier.weight(1f))
+
+                    Button(
+                        onClick = { lastSelected!!.let { if (it.isDirectory) history.visit(it) else onChosen(selected) } },
+                        modifier = Modifier.height(40.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        enabled = selected.isNotEmpty()
+                    ) {
+                        Text(if (lastSelected?.isDirectory == true) Vocabulary.open else Vocabulary.confirm)
                     }
-                    .onPreviewKeyEvent {
-                        if (isEditing && it.type == KeyUp && it.key == Enter) {
-                            val file = File(editingPath)
-                            if (file.exists()) {
-                                history.visit(file.asHierarchy)
-                            }
-                            focusManager.clearFocus()
-                            true
-                        } else {
-                            false
-                        }
-                    },
-                onValueChange = { editingPath = it },
-                textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
-                singleLine = true,
-            )
 
-            if (isEditing && editingPath.isEmpty()) {
-                Text(
-                    text = "Путь до папки",
-                    maxLines = 1,
-                    fontSize = 14.sp,
-                    color = Color.LightGray
-                )
-            }
+                    Spacer(Modifier.width(8.dp))
 
-            if (!isEditing) {
-                CurrentPathElement(
-                    file = history.list[history.currentIndex],
-                    onSubPath = { history.visit(it) }
-                )
+                    OutlinedButton(
+                        onClick = { onChosen(setOf()) },
+                        modifier = Modifier.height(40.dp),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(Vocabulary.cancel)
+                    }
+                }
             }
         }
     }
 }
 
-fun main() = singleWindowApplication {
+private fun main() = singleWindowApplication {
     MaterialTheme {
-        var isVisible by remember { mutableStateOf(true) }
-        val choosen = remember { mutableListOf<File>().toMutableStateList() }
+            var isVisible by remember { mutableStateOf(true) }
+            val chosen = remember { mutableListOf<File>().toMutableStateList() }
 
-        if (isVisible) {
-            ChooserDialog { choosen += it; isVisible = false }
-        }
-
-        Column {
-            choosen.forEach {
-                Text(it.path)
+            if (isVisible) {
+                ChooserDialog { chosen += it; isVisible = false }
             }
-        }
+
+            Column {
+                chosen.forEach {
+                    Text(it.path)
+                }
+            }
     }
 }

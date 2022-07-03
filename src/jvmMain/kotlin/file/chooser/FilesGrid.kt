@@ -1,7 +1,7 @@
 package file.chooser
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -66,25 +67,29 @@ private fun FileCell(
     modifier: Modifier = Modifier,
 ) {
     FileInfoArea(
-        info = file.info.toString(),
+        info = file.info.infoToString(),
         modifier = Modifier.clip(FileCellShape).then(modifier)
     ) {
-        Column {
-            FileIcon(
-                file = file,
-                modifier = Modifier
-                    .aspectRatio(1f / 1f)
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
+        BoxWithConstraints {
+            val maxWidth = maxWidth
 
-            Text(
-                text = file.name,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp).padding(bottom = 8.dp),
-                maxLines = 3,
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
-            )
+            Column {
+                FileIcon(
+                    file = file,
+                    modifier = Modifier
+                        .aspectRatio(1f / 1f)
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+
+                Text(
+                    text = file.name,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp).padding(bottom = 8.dp),
+                    maxLines = 3,
+                    fontSize = (maxWidth / 6.dp).coerceIn(8f..24f).sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }

@@ -1,13 +1,7 @@
 package file.chooser
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.key.Key.Companion.CtrlLeft
 import androidx.compose.ui.input.key.Key.Companion.CtrlRight
 import androidx.compose.ui.input.key.Key.Companion.DirectionDown
@@ -19,6 +13,9 @@ import androidx.compose.ui.input.key.Key.Companion.ShiftLeft
 import androidx.compose.ui.input.key.Key.Companion.ShiftRight
 import androidx.compose.ui.input.key.KeyEventType.Companion.KeyDown
 import androidx.compose.ui.input.key.KeyEventType.Companion.KeyUp
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 
 internal enum class Direction {
     Up, Down, Left, Right;

@@ -1,8 +1,19 @@
 package file.chooser
 
 import androidx.compose.runtime.toMutableStateList
-import file.chooser.FilesTableColumn.Name
 import file.chooser.HierarchyFile.Companion.FileComparator
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.associateWith
+import kotlin.collections.filter
+import kotlin.collections.isNotEmpty
+import kotlin.collections.minusAssign
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.onEach
+import kotlin.collections.plus
+import kotlin.collections.plusAssign
+import kotlin.collections.sortedWith
 
 private class Hierarchy<T> {
     private val map = mutableMapOf<T, T>()

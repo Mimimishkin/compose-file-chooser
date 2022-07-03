@@ -1,7 +1,5 @@
 package file.chooser
 
-import java.io.File
-
 internal class IntuitiveComparator : Comparator<String> {
     private lateinit var first: String
     private lateinit var second: String

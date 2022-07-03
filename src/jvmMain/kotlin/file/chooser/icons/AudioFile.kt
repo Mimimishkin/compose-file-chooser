@@ -1,17 +1,20 @@
-package file.chooser.icons.sharp
+package file.chooser.icons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
-val Icons.Sharp.AudioFile: ImageVector by lazy {
-    materialIcon(name = "Sharp.AudioFile") {
+val Icons.Filled.AudioFile: ImageVector by lazy {
+    materialIcon(name = "Filled.AudioFile") {
         materialPath {
             moveTo(14.0f, 2.0f)
-            lineTo(4.0f, 2.0f)
-            lineTo(4.0f, 22.0f)
-            lineTo(20.0f, 22.0f)
+            lineTo(6.0f, 2.0f)
+            curveTo(4.9f, 2.0f, 4.01f, 2.9f, 4.01f, 4.0f)
+            lineTo(4.0f, 20.0f)
+            curveTo(4.0f, 21.1f, 4.89f, 22.0f, 5.99f, 22.0f)
+            lineTo(18.0f, 22.0f)
+            curveTo(19.1f, 22.0f, 20.0f, 21.1f, 20.0f, 20.0f)
             lineTo(20.0f, 8.0f)
             lineTo(14.0f, 2.0f)
             close()

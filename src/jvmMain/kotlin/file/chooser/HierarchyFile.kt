@@ -1,11 +1,9 @@
 package file.chooser
 
-import androidx.compose.foundation.Image
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import file.chooser.HierarchyFile.FileType.Drive
-import java.awt.image.BufferedImage
 import java.io.File
 
 @Stable
@@ -50,6 +48,8 @@ internal data class HierarchyFile(private val file: File) {
         }
     }
 
+    val exists get() = file.exists()
+
     val info get() = FileInfo(file)
 
     val hasParent get() = file.parentFile != null
@@ -77,7 +77,7 @@ internal data class HierarchyFile(private val file: File) {
 
     val isHidden get() = file.isHidden
 
-    val count get() = file.list()?.size ?: 0
+    val isSystem get() = file.isSystem
 
     val children get() = file.listFiles()?.map { it.asHierarchy } ?: listOf()
 
@@ -94,6 +94,22 @@ internal data class HierarchyFile(private val file: File) {
 
     fun icon(large: Boolean): ImageBitmap =
         (if (large) file.icon(64) else file.smallIcon).toBuffered().toComposeImageBitmap()
+
+    fun child(name: String) = File(file, name).asHierarchy
+
+    fun createDir() = file.mkdir()
+
+    fun delete() = file.remove()
+
+    fun moveTo(destination: HierarchyFile) {
+        file.renameTo(destination.file)
+    }
+
+    fun copyTo(destination: HierarchyFile) {
+        file.copyRecursively(destination.file, overwrite = true)
+    }
+
+    fun rename(name: String) = moveTo(parent.child(name))
 
     enum class FileType {
         Document,
