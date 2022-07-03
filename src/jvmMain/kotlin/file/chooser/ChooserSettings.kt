@@ -15,8 +15,7 @@ enum class ChooserMode {
 fun defaultChooserSettings(
     mode: ChooserMode = FilesAndDirs,
     multiSelection: Boolean = true,
-    extensions: Map<String, String> = mapOf("exe" to "Исполняемый файл"),
-//    extensions: Map<String, String> = mapOf("*" to Vocabulary.all_files),
+    extensions: Map<String, String> = mapOf("*" to Vocabulary.all_files),
     filter: (File) -> Boolean = { true }
 ) = ChooserSettings(
     mode = mode,
