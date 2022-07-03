@@ -1,11 +1,14 @@
 package file.chooser
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -55,7 +58,8 @@ internal fun Overview(
                         allowSelect = settings.fullFilter.asHierarchy,
                         onChosen = onChosen,
                         onOpen = onVisitDir,
-                        onSort = { filesState.comparator = it }
+                        onSort = { filesState.comparator = it },
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
             }
@@ -68,7 +72,7 @@ internal fun Overview(
             onChosen = onChosen,
             onOpen = onVisitDir,
             onSort = { filesState.comparator = it },
-            modifier = modifier
+            modifier = modifier.padding(start = 4.dp)
         )
     }
 }

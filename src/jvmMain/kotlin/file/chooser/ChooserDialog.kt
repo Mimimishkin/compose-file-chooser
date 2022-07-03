@@ -156,21 +156,3 @@ internal fun ChooserDialogContent(
         }
     }
 }
-
-fun main() = singleWindowApplication {
-    var isVisible by remember { mutableStateOf(true) }
-    val chosen = remember { mutableListOf<File>().toMutableStateList() }
-
-    if (isVisible) {
-        ChooserDialog(
-            settings = defaultChooserSettings(mode = OnlyDirs),
-            onChosen = { chosen += it; isVisible = false }
-        )
-    }
-
-    Column {
-        chosen.forEach {
-            Text(it.path)
-        }
-    }
-}
