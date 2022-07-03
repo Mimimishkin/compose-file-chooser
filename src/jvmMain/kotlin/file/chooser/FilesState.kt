@@ -8,8 +8,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Composable
-internal fun rememberFilesState(dir: HierarchyFile, firstExtension: String?) = remember {
-    FilesState(dir, extensionFilter(setOfNotNull(firstExtension)).asHierarchy)
+internal fun rememberFilesState(dir: HierarchyFile, onlyDirs: Boolean, firstExtension: String?) = remember {
+    FilesState(dir, if (onlyDirs) { _ -> false } else extensionFilter(setOfNotNull(firstExtension)).asHierarchy)
 }
 
 internal class FilesState(initialDir: HierarchyFile, initialFilter: (HierarchyFile) -> Boolean) {

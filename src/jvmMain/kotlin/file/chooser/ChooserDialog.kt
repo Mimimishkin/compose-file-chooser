@@ -73,7 +73,7 @@ internal fun ChooserDialogContent(
 ) {
     val mayChoose: (Set<HierarchyFile>) -> Boolean = { it.all(predicate = settings.fullFilter.asHierarchy) }
     val hierarchy = remember { ExplorerHierarchy(HierarchyFile.explorerShortcuts) }
-    val filesState = rememberFilesState(initialDirectory, settings.firstExtension)
+    val filesState = rememberFilesState(initialDirectory, settings.mode == OnlyDirs, settings.firstExtension)
     val history = rememberHistory(
         initial = initialDirectory,
         mayVisit = { it.isDirectory || (settings.mode != OnlyDirs && mayChoose(setOf(it))) },
@@ -153,6 +153,24 @@ internal fun ChooserDialogContent(
                     }
                 }
             }
+        }
+    }
+}
+
+fun main() = singleWindowApplication {
+    var isVisible by remember { mutableStateOf(true) }
+    val chosen = remember { mutableListOf<File>().toMutableStateList() }
+
+    if (isVisible) {
+        ChooserDialog(
+            settings = defaultChooserSettings(mode = OnlyDirs),
+            onChosen = { chosen += it; isVisible = false }
+        )
+    }
+
+    Column {
+        chosen.forEach {
+            Text(it.path)
         }
     }
 }
