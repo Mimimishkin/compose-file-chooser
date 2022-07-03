@@ -13,10 +13,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import file.chooser.HierarchyFile.FileType
-import file.chooser.icons.AudioFile
-import file.chooser.icons.FileOpen
-import file.chooser.icons.FolderZip
-import file.chooser.icons.VideoFile
+import file.chooser.icons.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.min

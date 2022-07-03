@@ -18,6 +18,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import file.chooser.icons.ArrowUpward
+import file.chooser.icons.Circle
 import kotlin.math.max
 import kotlin.math.min
 

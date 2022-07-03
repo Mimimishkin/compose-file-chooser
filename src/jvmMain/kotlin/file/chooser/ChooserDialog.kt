@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.singleWindowApplication
-import file.chooser.ChooserMode.OnlyDirs
+import file.chooser.ChooserMode.*
 import file.chooser.HierarchyFile.Companion.asHierarchy
 import java.io.File
 
@@ -45,8 +45,8 @@ fun ChooserDialog(
     initialDirectory: File = LocalChooserDialogLastDirectory.current.dir,
     settings: ChooserSettings = defaultChooserSettings(),
     title: String = when (settings.mode) {
-        ChooserMode.OnlyFiles -> Vocabulary.choose_files
-        ChooserMode.FilesAndDirs -> Vocabulary.choose_files_and_dirs
+        OnlyFiles -> Vocabulary.choose_files
+        FilesAndDirs -> Vocabulary.choose_files_and_dirs
         OnlyDirs -> Vocabulary.choose_dirs
     },
     onChosen: (Set<File>) -> Unit = {}
@@ -151,28 +151,6 @@ internal fun ChooserDialogContent(
                     ) {
                         Text(Vocabulary.cancel)
                     }
-                }
-            }
-        }
-    }
-}
-
-private fun main() = singleWindowApplication {
-    MaterialTheme {
-        Localized("en") {
-            var isVisible by remember { mutableStateOf(true) }
-            val chosen = remember { mutableListOf<File>().toMutableStateList() }
-
-            if (isVisible) {
-                ChooserDialog(
-                    settings = defaultChooserSettings(mode = ChooserMode.OnlyFiles, extensions = mapOf("exe" to "FPOEKF", "txt" to "FPOEKF")),
-                    onChosen = { chosen += it; isVisible = false }
-                )
-            }
-
-            Column {
-                chosen.forEach {
-                    Text(it.path)
                 }
             }
         }

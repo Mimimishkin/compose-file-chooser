@@ -8,7 +8,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.ViewSidebar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -20,6 +19,9 @@ import androidx.compose.ui.unit.dp
 import file.chooser.ListRepresentationState.Companion.maxScale
 import file.chooser.ListRepresentationState.Companion.minScale
 import Vocabulary
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.Delete
+import file.chooser.icons.*
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.forEach
@@ -68,7 +70,7 @@ internal fun ActionsBar(
     with(controller) {
         Row(modifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             SimpleButton(onClick = ::newFolder, mayNewFolder) {
-                SimpleIcon(Icons.Default.CreateNewFolder)
+                SimpleIcon(Icons.Rounded.CreateNewFolder)
                 Spacer(Modifier.width(4.dp))
                 Text(Vocabulary.new_folder)
             }
@@ -76,37 +78,37 @@ internal fun ActionsBar(
             RowDivider(padding = 4.dp)
 
             SimpleQuadButton(onClick = ::copy, enabled = mayCopy) {
-                SimpleIcon(Icons.Default.FileCopy)
+                SimpleIcon(Icons.Rounded.FileCopy)
             }
 
             SimpleQuadButton(onClick = ::paste, enabled = mayPaste) {
-                SimpleIcon(Icons.Default.ContentPaste)
+                SimpleIcon(Icons.Rounded.ContentPaste)
             }
 
             SimpleQuadButton(onClick = ::cut, enabled = mayCut) {
-                SimpleIcon(Icons.Default.ContentCut)
+                SimpleIcon(Icons.Rounded.ContentCut)
             }
 
             SimpleQuadButton(onClick = ::delete, enabled = mayDelete) {
-                SimpleIcon(Icons.Default.Delete)
+                SimpleIcon(Icons.Rounded.Delete)
             }
 
             SimpleQuadButton(onClick = ::rename, enabled = mayRename) {
-                SimpleIcon(Icons.Default.DriveFileRenameOutline)
+                SimpleIcon(Icons.Rounded.DriveFileRenameOutline)
             }
 
             RowDivider(padding = 4.dp)
 
             SimpleQuadButton(onClick = filesState::selectAll) {
-                SimpleIcon(Icons.Default.CheckBox)
+                SimpleIcon(Icons.Rounded.SelectAll)
             }
 
             SimpleQuadButton(onClick = filesState::invertSelection) {
-                SimpleIcon(Icons.Default.IndeterminateCheckBox)
+                SimpleIcon(Icons.Rounded.InverseSelection)
             }
 
             SimpleQuadButton(onClick = filesState::unselect) {
-                SimpleIcon(Icons.Default.CheckBoxOutlineBlank)
+                SimpleIcon(Icons.Rounded.Deselect)
             }
 
             RowDivider(padding = 4.dp)
@@ -114,9 +116,9 @@ internal fun ActionsBar(
             SimpleQuadButton(onClick = onSwitchHierarchyVisibility) {
                 SimpleIcon(
                     if (isHierarchyVisible) {
-                        Icons.Outlined.ViewSidebar
+                        Icons.Rounded.VerticalSplit
                     } else {
-                        Icons.Filled.ViewSidebar
+                        Icons.Rounded.Rectangle
                     }
                 )
             }
@@ -126,8 +128,8 @@ internal fun ActionsBar(
                     var expanded by remember { mutableStateOf(false) }
                     val icon = { scale: Float ->
                         when(scale) {
-                            -1f -> Icons.Default.TableView
-                            else -> Icons.Default.GridView
+                            -1f -> Icons.Rounded.TableRows
+                            else -> Icons.Rounded.GridView
                         }
                     }
                     val scales = mapOf(

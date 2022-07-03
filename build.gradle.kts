@@ -30,8 +30,6 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
 
-                implementation(compose.materialIconsExtended)
-
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.desktop.components.splitPane)
                 runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.+")
