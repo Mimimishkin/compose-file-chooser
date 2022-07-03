@@ -2,8 +2,7 @@ import org.jetbrains.compose.compose
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose")
-    id("maven-publish")
+    id("org.jetbrains.compose") version "1.1.1"
 }
 
 group = "com.example"
@@ -37,14 +36,5 @@ kotlin {
             }
         }
         val jvmTest by getting
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "compose-file-chooser"
-            from(components["java"])
-        }
     }
 }

@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="compose-file-chooser-jvm-1.0-SNAPSHOT">
-    <output-path>$PROJECT_DIR$/build/libs</output-path>
-    <root id="archive" name="compose-file-chooser-jvm-1.0-SNAPSHOT.jar">
-      <element id="module-output" name="compose-file-chooser.jvmMain" />
-    </root>
-  </artifact>
-</component>
