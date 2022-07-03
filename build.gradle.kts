@@ -2,11 +2,12 @@ import org.jetbrains.compose.compose
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.1.1"
+    id("org.jetbrains.compose")
+    id("maven-publish")
 }
 
 group = "com.example"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     google()
@@ -36,5 +37,14 @@ kotlin {
             }
         }
         val jvmTest by getting
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "compose-file-chooser"
+            from(components["java"])
+        }
     }
 }
