@@ -1,5 +1,5 @@
 # Compose file chooser
-It's simple file chooser in material design that was disigned only for my personal needs.
+It's simple file chooser in material design that was designed just for my personal needs.
 
 It supports:
 1. file selection
