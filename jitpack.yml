@@ -1,9 +1,3 @@
-jdk:
-  - openjdk16
 before_install:
-  - echo "Before Install"
-  - bash ensure-java-17 install
-install:
-  - echo "Install"
-  - if ! bash ensure-java-17 use; then source ~/.sdkman/bin/sdkman-init.sh; fi
-  - java -version
+  - sdk install java 17.0.3.6.1-amzn 
+  - sdk use java 17.0.3.6.1-amzn
