@@ -2,6 +2,7 @@ import org.jetbrains.compose.compose
 
 plugins {
     kotlin("multiplatform")
+    id("maven-publish")
     id("org.jetbrains.compose") version "1.1.1"
 }
 
@@ -36,5 +37,13 @@ kotlin {
             }
         }
         val jvmTest by getting
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
     }
 }
