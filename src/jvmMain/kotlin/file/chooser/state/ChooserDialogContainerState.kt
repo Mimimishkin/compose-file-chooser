@@ -9,6 +9,8 @@ class ChooserDialogContainerState {
     }
 
     var lastDir by mutableStateOf(default)
+
+    val representationState = RepresentationState()
 }
 
 val LocalChooserDialogContainerState = compositionLocalOf { ChooserDialogContainerState() }

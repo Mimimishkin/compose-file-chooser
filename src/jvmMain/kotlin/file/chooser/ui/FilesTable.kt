@@ -50,7 +50,7 @@ internal fun FilesTable(
             row = { file, content ->
                 FileInfoArea(
                     info = file.info.infoToString(),
-                    modifier = elementModifier(file),
+                    modifier = Modifier.padding(vertical = 1.dp).then(elementModifier(file)),
                     content = content
                 )
             },
@@ -70,7 +70,7 @@ internal fun FilesTable(
                 when (column) {
                     Name -> {
                         Row {
-                            FileIcon(file = file, modifier = Modifier.size(20.dp).padding(2.dp))
+                            FileIcon(file = file, modifier = Modifier.size(22.dp).padding(2.dp))
 
                             Spacer(Modifier.width(6.dp))
 
@@ -78,7 +78,7 @@ internal fun FilesTable(
                                 text = file.name,
                                 modifier = Modifier.align(CenterVertically),
                                 maxLines = 1,
-                                fontSize = 12.sp,
+                                fontSize = 13.sp,
                             )
                         }
                     }
@@ -87,7 +87,7 @@ internal fun FilesTable(
                             Text(
                                 text = it,
                                 maxLines = 1,
-                                fontSize = 12.sp,
+                                fontSize = 13.sp,
                             )
                         }
                     }
@@ -96,7 +96,7 @@ internal fun FilesTable(
                             Text(
                                 text = it,
                                 maxLines = 1,
-                                fontSize = 12.sp,
+                                fontSize = 13.sp,
                             )
                         }
                     }
@@ -105,7 +105,7 @@ internal fun FilesTable(
                             Text(
                                 text = it,
                                 maxLines = 1,
-                                fontSize = 12.sp,
+                                fontSize = 13.sp,
                             )
                         }
                     }

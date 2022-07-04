@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.rounded.Delete
 import file.chooser.icons.*
 import file.chooser.state.FilesState
-import file.chooser.state.ListRepresentationState
-import file.chooser.state.ListRepresentationState.Companion.maxScale
-import file.chooser.state.ListRepresentationState.Companion.minScale
+import file.chooser.state.LocalChooserDialogContainerState
+import file.chooser.state.RepresentationState.Companion.maxScale
+import file.chooser.state.RepresentationState.Companion.minScale
 import file.chooser.utils.ChooserActionsController
 import file.chooser.utils.StandardFileOperations
 import file.chooser.utils.Vocabulary
@@ -32,9 +32,6 @@ import kotlin.collections.mapOf
 
 @Composable
 internal fun ActionsBar(
-    isHierarchyVisible: Boolean,
-    onSwitchHierarchyVisibility: () -> Unit,
-    listRepresentationState: ListRepresentationState,
     filesState: FilesState,
     operations: StandardFileOperations = rememberStandardFileOperations(filesState),
     modifier: Modifier = Modifier
@@ -70,7 +67,8 @@ internal fun ActionsBar(
 
     val controller = remember { ChooserActionsController(filesState, operations) }
 
-    with(controller) {
+    val representationState = LocalChooserDialogContainerState.current.representationState
+    with(controller) { with(representationState) {
         Row(modifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             SimpleButton(onClick = ::newFolder, mayNewFolder) {
                 SimpleIcon(Icons.Rounded.CreateNewFolder)
@@ -78,7 +76,7 @@ internal fun ActionsBar(
                 Text(Vocabulary.new_folder)
             }
 
-            RowDivider(padding = 4.dp)
+            HDivider(padding = 4.dp)
 
             SimpleQuadButton(onClick = ::copy, enabled = mayCopy) {
                 SimpleIcon(Icons.Rounded.FileCopy)
@@ -100,7 +98,7 @@ internal fun ActionsBar(
                 SimpleIcon(Icons.Rounded.DriveFileRenameOutline)
             }
 
-            RowDivider(padding = 4.dp)
+            HDivider(padding = 4.dp)
 
             SimpleQuadButton(onClick = filesState::selectAll) {
                 SimpleIcon(Icons.Rounded.SelectAll)
@@ -114,11 +112,11 @@ internal fun ActionsBar(
                 SimpleIcon(Icons.Rounded.Deselect)
             }
 
-            RowDivider(padding = 4.dp)
+            HDivider(padding = 4.dp)
 
-            SimpleQuadButton(onClick = onSwitchHierarchyVisibility) {
+            SimpleQuadButton(onClick = { showHierarchy = !showHierarchy }) {
                 SimpleIcon(
-                    if (isHierarchyVisible) {
+                    if (showHierarchy) {
                         Icons.Rounded.VerticalSplit
                     } else {
                         Icons.Rounded.Rectangle
@@ -127,53 +125,51 @@ internal fun ActionsBar(
             }
 
             Box {
-                with(listRepresentationState) {
-                    var expanded by remember { mutableStateOf(false) }
-                    val icon = { scale: Float ->
-                        when(scale) {
-                            -1f -> Icons.Rounded.TableRows
-                            else -> Icons.Rounded.GridView
-                        }
+                var expanded by remember { mutableStateOf(false) }
+                val icon = { scale: Float ->
+                    when(scale) {
+                        -1f -> Icons.Rounded.TableRows
+                        else -> Icons.Rounded.GridView
                     }
-                    val scales = mapOf(
-                        -1f to Vocabulary.table,
-                        minScale to Vocabulary.tiny_icons,
-                        0.7f to Vocabulary.small_icons,
-                        1f to Vocabulary.normal_icons,
-                        1.3f to Vocabulary.increased_icons,
-                        1.55f to Vocabulary.big_icons,
-                        maxScale to Vocabulary.large_icons,
-                    )
+                }
+                val scales = mapOf(
+                    -1f to Vocabulary.table,
+                    minScale to Vocabulary.tiny_icons,
+                    0.7f to Vocabulary.small_icons,
+                    1f to Vocabulary.normal_icons,
+                    1.3f to Vocabulary.increased_icons,
+                    1.55f to Vocabulary.big_icons,
+                    maxScale to Vocabulary.large_icons,
+                )
 
-                    SimpleQuadButton(onClick = { expanded = true }) {
-                        SimpleIcon(icon(if (asGrid) scale else -1f))
-                    }
+                SimpleQuadButton(onClick = { expanded = true }) {
+                    SimpleIcon(icon(if (asGrid) scale else -1f))
+                }
 
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        scales.forEach { (scale, name) ->
-                            Row(Modifier
-                                .fillMaxWidth()
-                                .padding(2.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .clickable {
-                                    if (scale != -1f) {
-                                        this@with.asGrid = true
-                                        this@with.scale = scale
-                                    } else {
-                                        this@with.asGrid = false
-                                    }
-                                    expanded = false
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    scales.forEach { (newScale, name) ->
+                        Row(Modifier
+                            .fillMaxWidth()
+                            .padding(2.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .clickable {
+                                if (newScale != -1f) {
+                                    asGrid = true
+                                    scale = newScale
+                                } else {
+                                    asGrid = false
                                 }
-                                .padding(2.dp)
-                            ) {
-                                SimpleIcon(icon(scale))
-                                Spacer(Modifier.width(4.dp))
-                                Text(name)
+                                expanded = false
                             }
+                            .padding(2.dp)
+                        ) {
+                            SimpleIcon(icon(newScale))
+                            Spacer(Modifier.width(4.dp))
+                            Text(name)
                         }
                     }
                 }
             }
         }
-    }
+    } }
 }

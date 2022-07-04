@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import file.chooser.ChooserMode.*
-import file.chooser.state.ListRepresentationState
+import file.chooser.state.RepresentationState
 import file.chooser.utils.HierarchyFile.Companion.asHierarchy
 import file.chooser.state.LocalChooserDialogContainerState
 import file.chooser.state.rememberFilesState
@@ -68,8 +68,6 @@ internal fun ChooserDialogContent(
             }
         }
     )
-    val representationState = remember { ListRepresentationState() }
-    var isHierarchyVisible by remember { mutableStateOf(true) }
 
     with(filesState) {
         Column(modifier) {
@@ -80,9 +78,6 @@ internal fun ChooserDialogContent(
                 modifier = Modifier.background(background).padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 ActionsBar(
-                    isHierarchyVisible = isHierarchyVisible,
-                    onSwitchHierarchyVisibility = { isHierarchyVisible = !isHierarchyVisible },
-                    listRepresentationState = representationState,
                     filesState = filesState,
                     modifier = Modifier.height(40.dp)
                 )
@@ -91,13 +86,12 @@ internal fun ChooserDialogContent(
             }
 
             Overview(
-                explorerHierarchy = if (isHierarchyVisible) hierarchy else null,
+                explorerHierarchy = hierarchy,
                 modifier = Modifier.weight(1f).padding(vertical = 4.dp),
                 filesState = filesState,
                 onVisitDir = { history.visit(it) },
                 settings = settings,
-                onChosen = onChosen,
-                representationState = representationState
+                onChosen = onChosen
             )
 
             Column(

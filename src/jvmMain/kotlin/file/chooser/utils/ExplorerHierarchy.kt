@@ -18,17 +18,17 @@ import kotlin.collections.sortedWith
 private class Hierarchy<T> {
     private val map = mutableMapOf<T, T>()
 
-    fun children(parent: T) = map.keys.filter { map[it] == parent }
+    fun children(parent: T) = map.entries.filter { it.value == parent }.map { it.key }
+
+    fun allChildren(parent: T, list: MutableSet<T> = mutableSetOf()): Set<T> =
+        list + children(parent).onEach { allChildren(it, list) }
 
     fun expand(parent: T, children: List<T>) {
         map += children.associateWith { parent }
     }
 
-    fun shirk(parent: T, list: MutableList<T> = mutableListOf()): List<T> {
-        return list + children(parent).onEach {
-            shirk(it, list)
-            map -= it
-        }
+    fun shirk(parent: T): Set<T> {
+        return allChildren(parent).also { map -= it }
     }
 
     fun levelOf(parent: T): Int {

@@ -20,30 +20,27 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import file.chooser.utils.ExplorerHierarchy
 import file.chooser.utils.HierarchyFile
 
 @Composable
 internal fun HierarchyPreview(
-    directories: List<HierarchyFile>,
-    levelOf: (HierarchyFile) -> Int,
-    isExpanded: (HierarchyFile) -> Boolean,
+    hierarchy: ExplorerHierarchy,
     onOpen: (HierarchyFile) -> Unit = {},
-    onExpand: (HierarchyFile) -> Unit = {},
-    onShirk: (HierarchyFile) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val verticalState = rememberLazyListState()
 
     Row {
         LazyColumn(modifier = modifier.weight(1f), state = verticalState) {
-            items(directories) { dir ->
+            items(hierarchy.files) { dir ->
                 HierarchyPreviewItem(
                     directory = dir,
                     onOpen = { onOpen(dir) },
-                    level = levelOf(dir),
-                    expanded = isExpanded(dir),
-                    onExpand = { onExpand(dir) },
-                    onShirk = { onShirk(dir) },
+                    level = hierarchy.levelOf(dir),
+                    expanded = hierarchy.hasChildren(dir),
+                    onExpand = { hierarchy.expand(dir) },
+                    onShirk = { hierarchy.shirk(dir) },
                 )
             }
         }
@@ -67,44 +64,54 @@ private fun HierarchyPreviewItem(
 ) {
     var isSelected by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = modifier
-            .background(if (isSelected) Color(0f, 0f, 0f, 0.1f) else Color.Transparent)
-            .onFocusEvent { isSelected = it.hasFocus }
-            .combinedClickable(
-                onClick = onOpen,
-                onDoubleClick = { onExpand(); onOpen() }
-            )
-            .padding(4.dp)
-            .padding(start = 16.dp * level),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(Modifier.alpha(if (directory.isHidden) 0.7f else 1f), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            if (directory.subDirs.isNotEmpty()) {
-                Icon(
-                    imageVector = if (expanded) Icons.Default.KeyboardArrowRight else Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable { if (expanded) onShirk() else onExpand() }
-                        .size(20.dp)
-                        .padding(2.dp)
+    key(directory) {
+        Box(
+            modifier = modifier
+                .background(if (isSelected) Color(0f, 0f, 0f, 0.1f) else Color.Transparent)
+                .onFocusEvent { isSelected = it.hasFocus }
+                .combinedClickable(
+                    onClick = onOpen,
+                    onDoubleClick = { onExpand(); onOpen() }
                 )
-            } else {
-                Box(Modifier.size(20.dp))
+                .padding(4.dp)
+                .padding(start = 16.dp * level),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                Modifier.alpha(if (directory.isHidden) 0.7f else 1f),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                var hasChildren by remember { mutableStateOf<Boolean?>(null) }
+
+                if (hasChildren != false) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.KeyboardArrowRight else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable {
+                                if (hasChildren == null) hasChildren = directory.subDirs.isNotEmpty()
+                                if (hasChildren!!) if (expanded) onShirk() else onExpand()
+                            }
+                            .size(20.dp)
+                            .padding(2.dp)
+                    )
+                } else {
+                    Box(Modifier.size(20.dp))
+                }
+
+                FileIcon(
+                    file = directory,
+                    modifier = Modifier.size(20.dp).padding(2.dp)
+                )
+
+                Text(
+                    text = directory.name,
+                    modifier = Modifier.align(Alignment.CenterVertically).weight(1f).padding(end = 4.dp),
+                    maxLines = 1,
+                    fontSize = 12.sp,
+                )
             }
-
-            FileIcon(
-                file = directory,
-                modifier = Modifier.size(20.dp).padding(2.dp)
-            )
-
-            Text(
-                text = directory.name,
-                modifier = Modifier.align(Alignment.CenterVertically).weight(1f).padding(end = 4.dp),
-                maxLines = 1,
-                fontSize = 12.sp,
-            )
         }
     }
 }

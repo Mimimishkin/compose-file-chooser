@@ -82,11 +82,6 @@ internal data class HierarchyFile(private val file: File) {
 
     val children get() = file.listFiles()?.map { it.asHierarchy } ?: listOf()
 
-    fun sortedChildren(comparator: Comparator<HierarchyFile>): List<HierarchyFile> {
-        val (dirs, files) = children.partition { it.isDirectory }
-        return dirs.sortedWith(comparator) + files.sortedWith(comparator)
-    }
-
     val subDirs get() = children.filter { it.isDirectory }
 
     val path get() = file.path

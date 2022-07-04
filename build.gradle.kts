@@ -29,10 +29,6 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.desktop.components.splitPane)
-                runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.+")
             }
         }
         val jvmTest by getting

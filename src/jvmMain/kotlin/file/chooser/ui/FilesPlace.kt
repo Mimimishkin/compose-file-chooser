@@ -19,10 +19,10 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
 import file.chooser.utils.HierarchyFile.Companion.FileComparator
 import file.chooser.state.FilesState
-import file.chooser.state.ListRepresentationState
-import file.chooser.state.ListRepresentationState.Companion.maxScale
-import file.chooser.state.ListRepresentationState.Companion.minScale
-import file.chooser.state.ListRepresentationState.Companion.normalCellSize
+import file.chooser.state.RepresentationState
+import file.chooser.state.RepresentationState.Companion.maxScale
+import file.chooser.state.RepresentationState.Companion.minScale
+import file.chooser.state.RepresentationState.Companion.normalCellSize
 import file.chooser.utils.HierarchyFile
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
@@ -30,7 +30,7 @@ import file.chooser.utils.HierarchyFile
 internal fun FilesPlace(
     filesState: FilesState,
     modifier: Modifier = Modifier,
-    representationState: ListRepresentationState,
+    representationState: RepresentationState,
     allowSelect: (HierarchyFile) -> Boolean,
     onChosen: (Set<HierarchyFile>) -> Unit,
     onOpen: (dir: HierarchyFile) -> Unit,
