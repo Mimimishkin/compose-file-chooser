@@ -5,6 +5,8 @@ import file.chooser.utils.HierarchyFile
 import file.chooser.utils.HierarchyFile.Companion.asHierarchy
 import file.chooser.asHierarchy
 import file.chooser.extensionFilter
+import file.chooser.ui.FilesTableColumn
+import file.chooser.utils.HierarchyFile.Companion.FileComparator
 import java.io.File
 import kotlin.math.max
 import kotlin.math.min
@@ -17,14 +19,21 @@ internal fun rememberFilesState(dir: HierarchyFile, onlyDirs: Boolean, firstExte
 internal class FilesState(initialDir: HierarchyFile, initialFilter: (HierarchyFile) -> Boolean) {
     var dir by mutableStateOf(initialDir)
 
-    var comparator by mutableStateOf<Comparator<HierarchyFile>?>(null)
+    var sortParams by mutableStateOf<Pair<FilesTableColumn, Boolean>?>(null)
 
     var filter by mutableStateOf(initialFilter)
 
     val files by derivedStateOf {
         var children = dir.children.filter { it.isDirectory || filter(it) }
-        if (comparator != null)
-            children = children.sortedWith(comparator!!)
+        if (sortParams != null) {
+            val (column, reverse) = sortParams!!
+            val comparator = FileComparator(column, reverse)
+            val (dirs, files) = children.sortedWith(comparator).partition { it.isDirectory }
+            children = if (!reverse) dirs + files else files + dirs
+        } else {
+            val (dirs, files) = children.partition { it.isDirectory }
+            children = dirs + files
+        }
         children
     }
 

@@ -41,7 +41,7 @@ internal fun Overview(
                 allowSelect = settings.fullFilter.asHierarchy,
                 onChosen = onChosen,
                 onOpen = onVisitDir,
-                onSort = { filesState.comparator = it },
+                onSort = { column, reverse -> filesState.sortParams = Pair(column, reverse) },
                 modifier = Modifier.padding(start = 4.dp)
             )
         }

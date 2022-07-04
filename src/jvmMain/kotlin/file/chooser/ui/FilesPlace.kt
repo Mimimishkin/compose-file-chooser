@@ -34,7 +34,7 @@ internal fun FilesPlace(
     allowSelect: (HierarchyFile) -> Boolean,
     onChosen: (Set<HierarchyFile>) -> Unit,
     onOpen: (dir: HierarchyFile) -> Unit,
-    onSort: (Comparator<HierarchyFile>) -> Unit,
+    onSort: (FilesTableColumn, reverse: Boolean) -> Unit,
 ) = with(filesState) { with(representationState) {
     val onChooseOrOpen = { file: HierarchyFile ->
         if (file.isDirectory) {
@@ -131,7 +131,7 @@ internal fun FilesPlace(
         } else {
             FilesTable(
                 files = files,
-                onSort = { column, reverse -> onSort(FileComparator(column, reverse)) },
+                onSort = { column, reverse -> onSort(column, reverse) },
                 elementModifier = selectionModifier
             )
         }
