@@ -1,4 +1,5 @@
 # Compose file chooser
+[![](https://jitpack.io/v/Mimimishkin/compose-file-chooser.svg)](https://jitpack.io/#Mimimishkin/compose-file-chooser)
 ### Short description
 It's simple file chooser in material design that was designed just for my personal needs.
 
