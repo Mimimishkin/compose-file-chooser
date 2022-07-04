@@ -1,6 +1,5 @@
-package file.chooser
+package file.chooser.utils
 
-import Vocabulary
 import androidx.compose.runtime.Composable
 import java.io.File
 import java.nio.file.Files

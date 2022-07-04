@@ -1,6 +1,5 @@
-package file.chooser
+package file.chooser.ui
 
-import Vocabulary
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import file.chooser.ui.SimpleOutlinedTextField
+import file.chooser.asHierarchy
+import file.chooser.extensionFilter
+import file.chooser.state.FilesState
+import file.chooser.utils.Vocabulary
 
 @Composable
 internal fun FileNameBar(

@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -20,6 +20,7 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import file.chooser.utils.HierarchyFile
 
 @Composable
 internal fun HierarchyPreview(

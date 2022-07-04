@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.VerticalScrollbar
@@ -19,6 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import file.chooser.autoscroll
+import file.chooser.autoscrollAtBounds
+import file.chooser.utils.HierarchyFile
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier

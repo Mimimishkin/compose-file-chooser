@@ -1,7 +1,6 @@
-package file.chooser
+package file.chooser.ui
 
 import Table
-import Vocabulary
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.gestures.scrollBy
@@ -14,7 +13,11 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import file.chooser.FilesTableColumn.*
+import file.chooser.autoscroll
+import file.chooser.autoscrollAtBounds
+import file.chooser.ui.FilesTableColumn.*
+import file.chooser.utils.HierarchyFile
+import file.chooser.utils.Vocabulary
 
 internal enum class FilesTableColumn {
     Name,

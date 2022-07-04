@@ -1,8 +1,9 @@
 package file.chooser
 
-import Vocabulary
 import androidx.compose.runtime.Composable
 import file.chooser.ChooserMode.*
+import file.chooser.utils.HierarchyFile
+import file.chooser.utils.Vocabulary
 import java.io.File
 
 enum class ChooserMode {

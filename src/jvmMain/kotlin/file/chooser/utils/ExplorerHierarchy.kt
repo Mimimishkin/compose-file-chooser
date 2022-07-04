@@ -1,7 +1,7 @@
-package file.chooser
+package file.chooser.utils
 
 import androidx.compose.runtime.toMutableStateList
-import file.chooser.HierarchyFile.Companion.FileComparator
+import file.chooser.utils.HierarchyFile.Companion.FileComparator
 import kotlin.collections.List
 import kotlin.collections.MutableList
 import kotlin.collections.associateWith

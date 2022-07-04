@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.utils
 
 internal class IntuitiveComparator : Comparator<String> {
     private lateinit var first: String

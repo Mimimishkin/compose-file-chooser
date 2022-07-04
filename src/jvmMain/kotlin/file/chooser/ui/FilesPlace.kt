@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -17,10 +17,13 @@ import androidx.compose.ui.input.pointer.PointerEventType.Companion.Press
 import androidx.compose.ui.input.pointer.PointerEventType.Companion.Scroll
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
-import file.chooser.HierarchyFile.Companion.FileComparator
-import file.chooser.ListRepresentationState.Companion.maxScale
-import file.chooser.ListRepresentationState.Companion.minScale
-import file.chooser.ListRepresentationState.Companion.normalCellSize
+import file.chooser.utils.HierarchyFile.Companion.FileComparator
+import file.chooser.state.FilesState
+import file.chooser.state.ListRepresentationState
+import file.chooser.state.ListRepresentationState.Companion.maxScale
+import file.chooser.state.ListRepresentationState.Companion.minScale
+import file.chooser.state.ListRepresentationState.Companion.normalCellSize
+import file.chooser.utils.HierarchyFile
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable

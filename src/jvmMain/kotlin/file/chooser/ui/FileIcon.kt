@@ -1,10 +1,9 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -12,8 +11,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import file.chooser.HierarchyFile.FileType
+import file.chooser.utils.HierarchyFile.FileType
 import file.chooser.icons.*
+import file.chooser.utils.HierarchyFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.min

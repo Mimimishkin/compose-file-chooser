@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,7 +7,6 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -16,12 +15,16 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import file.chooser.ListRepresentationState.Companion.maxScale
-import file.chooser.ListRepresentationState.Companion.minScale
-import Vocabulary
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.material.icons.rounded.Delete
 import file.chooser.icons.*
+import file.chooser.state.FilesState
+import file.chooser.state.ListRepresentationState
+import file.chooser.state.ListRepresentationState.Companion.maxScale
+import file.chooser.state.ListRepresentationState.Companion.minScale
+import file.chooser.utils.ChooserActionsController
+import file.chooser.utils.StandardFileOperations
+import file.chooser.utils.Vocabulary
+import file.chooser.utils.rememberStandardFileOperations
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.forEach

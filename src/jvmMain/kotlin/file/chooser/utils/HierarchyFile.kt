@@ -1,9 +1,10 @@
-package file.chooser
+package file.chooser.utils
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import file.chooser.HierarchyFile.FileType.Drive
+import file.chooser.ui.FilesTableColumn
+import file.chooser.utils.HierarchyFile.FileType.Drive
 import java.io.File
 
 @Stable

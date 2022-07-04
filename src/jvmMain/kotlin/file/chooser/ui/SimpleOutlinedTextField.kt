@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.border

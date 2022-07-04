@@ -1,6 +1,7 @@
-package file.chooser
+package file.chooser.state
 
 import androidx.compose.runtime.*
+import file.chooser.utils.FileUtils
 
 class ChooserDialogContainerState {
     companion object {

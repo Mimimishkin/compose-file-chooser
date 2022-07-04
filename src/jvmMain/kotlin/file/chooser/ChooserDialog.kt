@@ -1,6 +1,5 @@
 package file.chooser
 
-import Vocabulary
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -15,7 +14,15 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import file.chooser.ChooserMode.*
-import file.chooser.HierarchyFile.Companion.asHierarchy
+import file.chooser.state.ListRepresentationState
+import file.chooser.utils.HierarchyFile.Companion.asHierarchy
+import file.chooser.state.LocalChooserDialogContainerState
+import file.chooser.state.rememberFilesState
+import file.chooser.ui.*
+import file.chooser.utils.ExplorerHierarchy
+import file.chooser.utils.HierarchyFile
+import file.chooser.utils.Vocabulary
+import file.chooser.utils.rememberHistory
 import java.io.File
 
 @Composable

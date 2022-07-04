@@ -1,9 +1,11 @@
-package file.chooser
+package file.chooser.state
 
 import androidx.compose.runtime.*
-import file.chooser.HierarchyFile.Companion.asHierarchy
+import file.chooser.utils.HierarchyFile
+import file.chooser.utils.HierarchyFile.Companion.asHierarchy
+import file.chooser.asHierarchy
+import file.chooser.extensionFilter
 import java.io.File
-import java.security.cert.Extension
 import kotlin.math.max
 import kotlin.math.min
 

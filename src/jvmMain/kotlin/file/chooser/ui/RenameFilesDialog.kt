@@ -1,6 +1,5 @@
-package file.chooser
+package file.chooser.ui
 
-import Vocabulary
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
@@ -15,6 +14,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.rememberDialogState
+import file.chooser.ui.FileIcon
+import file.chooser.utils.HierarchyFile
+import file.chooser.utils.Vocabulary
 import kotlin.collections.Collection
 import kotlin.collections.component1
 import kotlin.collections.component2

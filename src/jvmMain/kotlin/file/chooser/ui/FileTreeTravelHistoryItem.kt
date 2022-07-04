@@ -1,82 +1,27 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import file.chooser.utils.FileTreeTravelHistory
 import file.chooser.icons.ArrowUpward
 import file.chooser.icons.Circle
-import kotlin.math.max
-import kotlin.math.min
-
-internal class FileTreeTravelHistory(
-    initialDirectory: HierarchyFile,
-    private val mayVisit: (HierarchyFile) -> Boolean = { true },
-    private val onVisit: (HierarchyFile) -> Unit = {}
-) {
-    private val _list = mutableListOf(initialDirectory)
-    val list: List<HierarchyFile> = _list
-
-    var currentIndex by mutableStateOf(0)
-    val current by derivedStateOf { list[currentIndex] }
-
-    init {
-        onVisit(initialDirectory)
-    }
-
-    fun visit(directory: HierarchyFile) {
-        if (mayVisit(directory)) {
-            if (list[currentIndex] == directory)
-                return
-            _list.dropLast(list.lastIndex - currentIndex)
-            _list.add(directory)
-            currentIndex++
-            onVisit(directory)
-        }
-    }
-
-    fun undo() {
-        currentIndex = max(0, currentIndex - 1)
-        onVisit(list[currentIndex])
-    }
-
-    fun redo() {
-        currentIndex = min(currentIndex + 1, list.lastIndex)
-        onVisit(list[currentIndex])
-    }
-
-    fun moveTo(index: Int) {
-        currentIndex = index
-        onVisit(list[currentIndex])
-    }
-}
-
-@Composable
-internal fun rememberHistory(
-    initial: HierarchyFile,
-    mayVisit: (HierarchyFile) -> Boolean,
-    onVisit: (HierarchyFile) -> Unit
-) = remember {
-    FileTreeTravelHistory(
-        initialDirectory = initial,
-        mayVisit = mayVisit,
-        onVisit = onVisit
-    )
-}
 
 @Composable
 internal fun FileTreeTravelHistoryItem(
@@ -106,7 +51,7 @@ internal fun FileTreeTravelHistoryItem(
         }
     }
 
-    Row(modifier, horizontalArrangement = spacedBy(2.dp)) {
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
         SimpleButton(
             icon = Icons.Default.ArrowBack,
             enabled = currentIndex > 0,
@@ -134,7 +79,7 @@ internal fun FileTreeTravelHistoryItem(
             ) {
                 list.reversed().forEachIndexed { index, file ->
                     Row(
-                        verticalAlignment = CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .widthIn(max = 370.dp)
                             .fillMaxWidth()

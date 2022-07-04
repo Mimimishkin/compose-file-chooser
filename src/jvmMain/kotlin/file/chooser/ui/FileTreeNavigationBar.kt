@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -7,6 +7,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import file.chooser.ui.EditableCurrentPathElement
+import file.chooser.ui.FileTreeTravelHistoryItem
+import file.chooser.utils.FileTreeTravelHistory
 
 @Composable
 internal fun FileTreeNavigationBar(

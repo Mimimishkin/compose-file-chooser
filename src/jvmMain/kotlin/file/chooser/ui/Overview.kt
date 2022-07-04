@@ -1,31 +1,15 @@
-package file.chooser
+package file.chooser.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import file.chooser.*
+import file.chooser.state.FilesState
+import file.chooser.state.ListRepresentationState
+import file.chooser.utils.ExplorerHierarchy
+import file.chooser.utils.HierarchyFile
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
-import org.jetbrains.compose.splitpane.HorizontalSplitPane
-
-class ListRepresentationState {
-    var asGrid by mutableStateOf(true)
-
-    var scale by mutableStateOf(1f)
-
-    companion object {
-        val normalCellSize = 80.dp
-
-        val minScale = 0.5f
-
-        val maxScale = 2f
-    }
-}
 
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable

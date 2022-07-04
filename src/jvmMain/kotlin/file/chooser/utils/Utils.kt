@@ -1,4 +1,4 @@
-package file.chooser
+package file.chooser.utils
 
 import java.awt.Desktop
 import java.awt.Desktop.Action.MOVE_TO_TRASH

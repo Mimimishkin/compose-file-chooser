@@ -1,6 +1,5 @@
-package file.chooser
+package file.chooser.utils
 
-import Vocabulary
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -14,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import file.chooser.state.FilesState
+import file.chooser.ui.FilesGrid
+import file.chooser.ui.RenameFilesDialog
 
 internal data class StandardFileOperations(
     val onPaste: (Set<HierarchyFile>, wasCut: Boolean) -> Unit,
