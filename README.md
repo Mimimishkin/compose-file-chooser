@@ -16,19 +16,16 @@ It supports:
 Sourse code:
 
     fun main() = singleWindowApplication {
-        var isVisible by remember { mutableStateOf(true) }
-        val chosen = remember { mutableListOf<File>().toMutableStateList() }
+        MaterialTheme {
+            val dialogState = rememberChooserDialogState()
+            val scope = rememberCoroutineScope()
 
-        if (isVisible) {
-            ChooserDialog(
-                settings = defaultChooserSettings(mode = OnlyFiles),
-                onChosen = { chosen += it; isVisible = false }
-            )
-        }
-
-        Column {
-            chosen.forEach {
-                Text(it.path)
+            Button(onClick = {
+                scope.launch {
+                    println(dialogState.choose())
+                }
+            }) {
+                Text("Choose files")
             }
         }
     }
