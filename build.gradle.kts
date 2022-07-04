@@ -2,11 +2,11 @@ import org.jetbrains.compose.compose
 
 plugins {
     kotlin("multiplatform")
-    id("maven-publish")
     id("org.jetbrains.compose") version "1.1.1"
+    `maven-publish`
 }
 
-group = "com.example"
+group = "my.components"
 version = "1.0.0"
 
 repositories {
@@ -38,7 +38,11 @@ kotlin {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            from(components["java"])
+            groupId = project.group as String
+            artifactId = "compose-file-chooser"
+            version = project.version as String
+
+            from(components["kotlin"])
         }
     }
 }
