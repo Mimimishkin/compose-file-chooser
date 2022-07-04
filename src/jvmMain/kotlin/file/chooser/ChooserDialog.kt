@@ -1,6 +1,5 @@
 package file.chooser
 
-import Localized
 import Vocabulary
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,53 +11,29 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.singleWindowApplication
 import file.chooser.ChooserMode.*
 import file.chooser.HierarchyFile.Companion.asHierarchy
 import java.io.File
 
-val LocalChooserDialogLastDirectory = compositionLocalOf { ChooserDialogState() }
-
-class ChooserDialogState {
-    companion object {
-        val default = FileUtils.defaultDirectory
-    }
-
-    var dir by mutableStateOf(default)
-}
-
-@Composable
-fun ChooserDialogContainer(content: @Composable () -> Unit) {
-    val state = remember { ChooserDialogState() }
-
-    CompositionLocalProvider(
-        LocalChooserDialogLastDirectory provides state
-    ) {
-        content()
-    }
-}
-
 @Composable
 fun ChooserDialog(
-    initialDirectory: File = LocalChooserDialogLastDirectory.current.dir,
-    settings: ChooserSettings = defaultChooserSettings(),
-    title: String = when (settings.mode) {
-        OnlyFiles -> Vocabulary.choose_files
-        FilesAndDirs -> Vocabulary.choose_files_and_dirs
-        OnlyDirs -> Vocabulary.choose_dirs
-    },
-    onChosen: (Set<File>) -> Unit = {}
+    initialDirectory: File,
+    settings: ChooserSettings,
+    title: String,
+    icon: Painter?,
+    onChosen: (Set<File>) -> Unit
 ) {
-    val state = LocalChooserDialogLastDirectory.current
+    val state = LocalChooserDialogContainerState.current
 
-    Dialog(title = title, onCloseRequest = { onChosen(setOf()) }) {
+    Dialog(title = title, icon = icon, onCloseRequest = { onChosen(setOf()) }) {
         ChooserDialogContent(
             initialDirectory = initialDirectory.asHierarchy,
             settings = settings,
             onChosen = { onChosen(it.mapTo(mutableSetOf()) { file -> file.asCommon }) },
-            onCurrentDirChanged = { state.dir = it.asCommon }
+            onCurrentDirChanged = { state.lastDir = it.asCommon }
         )
     }
 }
