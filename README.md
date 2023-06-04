@@ -1,3 +1,5 @@
+This version looks awful, so I decided to rewrite everything from scratch with material 3. I added new features and improved the appearance 100 times over. And... Deleted everything. In the next couple of months I'll make a kotlin-multiplatform library which will able to open the native file chooser 
+
 # Compose file chooser
 [![](https://jitpack.io/v/Mimimishkin/compose-file-chooser.svg)](https://jitpack.io/#Mimimishkin/compose-file-chooser)
 ### Short description
